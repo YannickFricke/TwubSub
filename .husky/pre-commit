@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+mix format --check-formatted
+mix credo
+mix dialyzer --no-check

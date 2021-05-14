@@ -3,7 +3,11 @@
     "version": "0.0.0",
     "license": "MIT",
     "private": true,
+    "scripts": {
+        "prepare": "husky install"
+    },
     "devDependencies": {
+        "husky": "^6.0.0",
         "onchange": "^7.1.0"
     }
 }
