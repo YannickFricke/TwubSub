@@ -1,0 +1,101 @@
+name: CI
+
+on:
+    push:
+    pull_request:
+
+env:
+    MIX_ENV: test
+
+jobs:
+    deps:
+        name: Dependencies
+        runs-on: ubuntu-latest
+        steps:
+            - name: Install required packets
+              run: |
+                  wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb && sudo dpkg -i erlang-solutions_2.0_all.deb
+                  sudo apt-get update && sudo apt-get install -y esl-erlang elixir
+                  mix local.hex --force
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - name: Retrieve Cached Dependencies
+              uses: actions/cache@v2
+              id: mix-cache
+              with:
+                  path: |
+                      deps
+                      _build
+                      priv/plts
+                  key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mix.lock') }}
+
+            - name: Install Dependencies
+              if: steps.mix-cache.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p priv/plts
+                  mix local.rebar --force
+                  mix deps.get
+                  mix deps.compile
+                  mix dialyzer --plt
+
+    static_code_analysis:
+        name: Static Code Analysis
+        needs: deps
+        runs-on: ubuntu-latest
+        steps:
+            - name: Install required packets
+              run: |
+                  wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb && sudo dpkg -i erlang-solutions_2.0_all.deb
+                  sudo apt-get update && sudo apt-get install -y esl-erlang elixir
+                  mix local.hex --force
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - name: Retrieve Cached Dependencies
+              uses: actions/cache@v2
+              id: mix-cache
+              with:
+                  path: |
+                      deps
+                      _build
+                      priv/plts
+                  key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mix.lock') }}
+
+            - name: Check Code Format
+              run: mix format --check-formatted
+
+            - name: Run Credo
+              run: mix credo
+
+            - name: Run Dialyzer
+              run: mix dialyzer --no-check --halt-exit-status
+
+    unit_tests:
+        name: Unit Tests
+        needs: deps
+        runs-on: ubuntu-latest
+        steps:
+            - name: Install required packets
+              run: |
+                  wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb && sudo dpkg -i erlang-solutions_2.0_all.deb
+                  sudo apt-get update && sudo apt-get install -y esl-erlang elixir
+                  mix local.hex --force
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - name: Retrieve Cached Dependencies
+              uses: actions/cache@v2
+              id: mix-cache
+              with:
+                  path: |
+                      deps
+                      _build
+                      priv/plts
+                  key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mix.lock') }}
+
+            - name: Run test
+              run: mix test --slowest 10
