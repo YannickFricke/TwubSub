@@ -28,6 +28,7 @@ defmodule TwubSub.MixProject do
       {:httpoison, "~> 1.8"},
       {:jason, "~> 1.2"},
       {:websockex, "~> 0.4.3"},
+      {:mox, "~> 1.0", only: :test},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
