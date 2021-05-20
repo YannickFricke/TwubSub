@@ -1,8 +1,6 @@
 defmodule Sharding.TopicManagerTest do
   use ExUnit.Case
 
-  alias TwubSub.Sharding.ShardManager
-
   @tag :skip
   test "can be supervised" do
   end
