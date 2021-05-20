@@ -26,6 +26,7 @@ defmodule TwubSub.MixProject do
   defp deps do
     [
       {:httpoison, "~> 1.8"},
+      {:plug_cowboy, "~> 2.0"},
       {:jason, "~> 1.2"},
       {:websockex, "~> 0.4.3"},
       {:mox, "~> 1.0", only: :test},
