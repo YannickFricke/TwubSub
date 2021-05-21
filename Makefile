@@ -18,6 +18,7 @@ format-watch:
 
 analyze: clear
 	mix dialyzer
+	mix credo
 
 analyze-watch:
 	onchange -i -k "config/*.ex" "lib/**/*.ex" "test/**/*.exs" -- make analyze
